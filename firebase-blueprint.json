@@ -1,0 +1,358 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Authenticated user account, academic background, career goal, and learning preferences.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "email": { "type": "string", "maxLength": 254 },
+        "displayName": { "type": "string", "maxLength": 120 },
+        "photoURL": { "type": "string", "maxLength": 500 },
+        "role": { "type": "string", "enum": ["user", "admin"] },
+        "onboardingCompleted": { "type": "boolean" },
+        "college": { "type": "string", "maxLength": 160 },
+        "degree": { "type": "string", "maxLength": 120 },
+        "currentYear": { "type": "string", "maxLength": 40 },
+        "graduationYear": { "type": "string", "maxLength": 10 },
+        "country": { "type": "string", "maxLength": 80 },
+        "targetRoleId": { "type": "string", "maxLength": 80 },
+        "targetRoleName": { "type": "string", "maxLength": 120 },
+        "careerDomain": { "type": "string", "maxLength": 80 },
+        "targetCompanies": { "type": "array" },
+        "desiredIndustry": { "type": "string", "maxLength": 80 },
+        "jobGoal": { "type": "string", "maxLength": 80 },
+        "hoursPerWeek": { "type": "number" },
+        "learningStyle": { "type": "string", "maxLength": 60 },
+        "budgetPreference": { "type": "string", "enum": ["free_only", "free_preferred", "paid_ok"] },
+        "preferredLanguage": { "type": "string", "maxLength": 40 },
+        "learningPace": { "type": "string", "enum": ["steady", "intensive", "flexible"] },
+        "streakDays": { "type": "number" },
+        "totalHoursStudied": { "type": "number" },
+        "portfolioPublic": { "type": "boolean" },
+        "portfolioSlug": { "type": "string", "maxLength": 80 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "displayName", "role", "onboardingCompleted", "createdAt", "updatedAt"]
+    },
+    "UserSkill": {
+      "title": "UserSkill",
+      "description": "Individual technical or soft skill tracked by a user with proficiency and evidence.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "maxLength": 80 },
+        "category": { "type": "string", "maxLength": 40 },
+        "proficiency": { "type": "integer" },
+        "experienceMonths": { "type": "integer" },
+        "lastPracticed": { "type": "string", "maxLength": 32 },
+        "confidence": { "type": "integer" },
+        "evidence": { "type": "string", "maxLength": 300 },
+        "linkedProjectId": { "type": "string", "maxLength": 80 },
+        "currentlyLearning": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "name", "category", "proficiency", "currentlyLearning", "createdAt", "updatedAt"]
+    },
+    "UserProject": {
+      "title": "UserProject",
+      "description": "User project entry used for portfolio showcase, skill demonstration, and AI review.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "title": { "type": "string", "maxLength": 140 },
+        "description": { "type": "string", "maxLength": 2000 },
+        "techStack": { "type": "array" },
+        "skillsDemonstrated": { "type": "array" },
+        "githubUrl": { "type": "string", "maxLength": 400 },
+        "liveUrl": { "type": "string", "maxLength": 400 },
+        "status": { "type": "string", "enum": ["idea", "in_progress", "completed"] },
+        "userRole": { "type": "string", "maxLength": 100 },
+        "achievements": { "type": "string", "maxLength": 1000 },
+        "aiReview": { "type": "object" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "title", "description", "status", "createdAt", "updatedAt"]
+    },
+    "SkillGapAnalysis": {
+      "title": "SkillGapAnalysis",
+      "description": "Deterministic skill gap calculation paired with Gemini-generated career recommendations.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "targetRoleId": { "type": "string", "maxLength": 80 },
+        "targetRoleName": { "type": "string", "maxLength": 120 },
+        "readinessScore": { "type": "number" },
+        "overallMatchPercentage": { "type": "number" },
+        "matchedCount": { "type": "integer" },
+        "improveCount": { "type": "integer" },
+        "missingCount": { "type": "integer" },
+        "estimatedHours": { "type": "number" },
+        "methodology": { "type": "string", "maxLength": 600 },
+        "gapItems": { "type": "array" },
+        "aiReport": { "type": "object" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "targetRoleId", "targetRoleName", "readinessScore", "overallMatchPercentage", "createdAt"]
+    },
+    "Roadmap": {
+      "title": "Roadmap",
+      "description": "Personalized learning roadmap spanning 5 career-readiness phases.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "title": { "type": "string", "maxLength": 160 },
+        "targetRoleId": { "type": "string", "maxLength": 80 },
+        "targetRoleName": { "type": "string", "maxLength": 120 },
+        "durationDays": { "type": "integer" },
+        "hoursPerWeek": { "type": "number" },
+        "status": { "type": "string", "enum": ["active", "paused", "completed"] },
+        "phases": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "title", "targetRoleId", "targetRoleName", "durationDays", "status", "createdAt", "updatedAt"]
+    },
+    "RoadmapTask": {
+      "title": "RoadmapTask",
+      "description": "Actionable task within a roadmap phase linked to a skill and assignment.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "roadmapId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "phaseIndex": { "type": "integer" },
+        "phaseName": { "type": "string", "maxLength": 80 },
+        "title": { "type": "string", "maxLength": 160 },
+        "description": { "type": "string", "maxLength": 1200 },
+        "skillName": { "type": "string", "maxLength": 80 },
+        "priority": { "type": "string", "enum": ["high", "medium", "low"] },
+        "estimatedHours": { "type": "number" },
+        "startDate": { "type": "string", "maxLength": 32 },
+        "dueDate": { "type": "string", "maxLength": 32 },
+        "learningResource": { "type": "string", "maxLength": 300 },
+        "assignment": { "type": "string", "maxLength": 400 },
+        "status": { "type": "string", "enum": ["not_started", "in_progress", "completed", "skipped"] },
+        "orderIndex": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "roadmapId", "phaseIndex", "phaseName", "title", "skillName", "priority", "status", "orderIndex", "createdAt", "updatedAt"]
+    },
+    "SavedResource": {
+      "title": "SavedResource",
+      "description": "Bookmarked learning resource saved by a user.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "resourceId": { "type": "string", "maxLength": 120 },
+        "title": { "type": "string", "maxLength": 160 },
+        "skill": { "type": "string", "maxLength": 80 },
+        "category": { "type": "string", "maxLength": 60 },
+        "provider": { "type": "string", "maxLength": 100 },
+        "url": { "type": "string", "maxLength": 400 },
+        "isSearchSuggestion": { "type": "boolean" },
+        "isFree": { "type": "boolean" },
+        "difficulty": { "type": "string", "maxLength": 40 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "resourceId", "title", "skill", "category", "isFree", "createdAt"]
+    },
+    "ProgressRecord": {
+      "title": "ProgressRecord",
+      "description": "Time-stamped learning session or milestone progress entry.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "date": { "type": "string", "maxLength": 32 },
+        "hoursStudied": { "type": "number" },
+        "tasksCompleted": { "type": "integer" },
+        "skillsImproved": { "type": "integer" },
+        "readinessScore": { "type": "number" },
+        "note": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "date", "hoursStudied", "tasksCompleted", "createdAt"]
+    },
+    "ChatConversation": {
+      "title": "ChatConversation",
+      "description": "AI Career Coach conversation thread metadata.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "title": { "type": "string", "maxLength": 140 },
+        "targetRoleName": { "type": "string", "maxLength": 120 },
+        "messageCount": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "title", "messageCount", "createdAt", "updatedAt"]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "Individual message in an AI Career Coach conversation.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "conversationId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "role": { "type": "string", "enum": ["user", "assistant"] },
+        "content": { "type": "string", "maxLength": 12000 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "conversationId", "role", "content", "createdAt"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "User notification record for analysis, roadmap, and milestone events.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "title": { "type": "string", "maxLength": 140 },
+        "message": { "type": "string", "maxLength": 500 },
+        "type": { "type": "string", "enum": ["analysis", "roadmap", "milestone", "system"] },
+        "read": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "title", "message", "type", "read", "createdAt"]
+    },
+    "CareerRole": {
+      "title": "CareerRole",
+      "description": "Admin-managed extensible career role definitions stored in Firestore.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 80, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "maxLength": 120 },
+        "domain": { "type": "string", "maxLength": 80 },
+        "seniorityLevel": { "type": "string", "maxLength": 60 },
+        "description": { "type": "string", "maxLength": 1200 },
+        "isPublished": { "type": "boolean" },
+        "requiredSkills": { "type": "array" },
+        "importantSkills": { "type": "array" },
+        "optionalSkills": { "type": "array" },
+        "exampleResponsibilities": { "type": "array" },
+        "careerProgression": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "domain", "seniorityLevel", "description", "isPublished", "createdAt", "updatedAt"]
+    },
+    "SharedPortfolio": {
+      "title": "SharedPortfolio",
+      "description": "User-controlled shareable public portfolio view.",
+      "type": "object",
+      "properties": {
+        "slug": { "type": "string", "maxLength": 80, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "ownerName": { "type": "string", "maxLength": 120 },
+        "targetRoleName": { "type": "string", "maxLength": 120 },
+        "college": { "type": "string", "maxLength": 160 },
+        "degree": { "type": "string", "maxLength": 120 },
+        "isPublic": { "type": "boolean" },
+        "skills": { "type": "array" },
+        "projects": { "type": "array" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["slug", "userId", "ownerName", "isPublic", "updatedAt"]
+    },
+    "AdminRecord": {
+      "title": "AdminRecord",
+      "description": "Explicit administrator privilege grant record.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "email": { "type": "string", "maxLength": 254 },
+        "grantedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "grantedAt"]
+    },
+    "AdminActivity": {
+      "title": "AdminActivity",
+      "description": "Immutable audit log entry for administrative actions.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "adminUid": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "adminEmail": { "type": "string", "maxLength": 254 },
+        "action": { "type": "string", "maxLength": 120 },
+        "targetId": { "type": "string", "maxLength": 128 },
+        "details": { "type": "string", "maxLength": 500 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "adminUid", "adminEmail", "action", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Private user account, profile, academic details, and preferences."
+    },
+    "/users/{userId}/skills/{skillId}": {
+      "schema": { "$ref": "#/entities/UserSkill" },
+      "description": "User's personal skill inventory."
+    },
+    "/users/{userId}/projects/{projectId}": {
+      "schema": { "$ref": "#/entities/UserProject" },
+      "description": "User's portfolio and practice projects."
+    },
+    "/users/{userId}/analyses/{analysisId}": {
+      "schema": { "$ref": "#/entities/SkillGapAnalysis" },
+      "description": "Historical skill-gap analyses and AI career reports."
+    },
+    "/users/{userId}/roadmaps/{roadmapId}": {
+      "schema": { "$ref": "#/entities/Roadmap" },
+      "description": "User's personalized learning roadmaps."
+    },
+    "/users/{userId}/roadmaps/{roadmapId}/tasks/{taskId}": {
+      "schema": { "$ref": "#/entities/RoadmapTask" },
+      "description": "Tasks inside a specific roadmap."
+    },
+    "/users/{userId}/bookmarks/{bookmarkId}": {
+      "schema": { "$ref": "#/entities/SavedResource" },
+      "description": "Saved learning resources."
+    },
+    "/users/{userId}/progress/{recordId}": {
+      "schema": { "$ref": "#/entities/ProgressRecord" },
+      "description": "User learning progress log entries."
+    },
+    "/users/{userId}/conversations/{convId}": {
+      "schema": { "$ref": "#/entities/ChatConversation" },
+      "description": "AI Career Coach conversation threads."
+    },
+    "/users/{userId}/conversations/{convId}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/ChatMessage" },
+      "description": "Messages inside an AI Career Coach thread."
+    },
+    "/users/{userId}/notifications/{notifId}": {
+      "schema": { "$ref": "#/entities/Notification" },
+      "description": "In-app notifications for the user."
+    },
+    "/careers/{careerId}": {
+      "schema": { "$ref": "#/entities/CareerRole" },
+      "description": "Extensible career role catalog managed by administrators."
+    },
+    "/sharedPortfolios/{slug}": {
+      "schema": { "$ref": "#/entities/SharedPortfolio" },
+      "description": "User-controlled shareable public portfolio snapshots."
+    },
+    "/admins/{adminUid}": {
+      "schema": { "$ref": "#/entities/AdminRecord" },
+      "description": "Admin role grant records."
+    },
+    "/adminActivity/{activityId}": {
+      "schema": { "$ref": "#/entities/AdminActivity" },
+      "description": "Immutable administrative audit logs."
+    }
+  }
+}

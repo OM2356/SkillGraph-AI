@@ -1,0 +1,628 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Startup connection check document
+    match /test/connection {
+      allow get: if true;
+    }
+
+    // --- Global Hardened Primitives ---
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isOwner(userId) {
+      return isVerifiedUser() && request.auth.uid == userId;
+    }
+
+    function isBootstrappedAdmin() {
+      return isVerifiedUser() && request.auth.token.email == 'omkarsathe3103@gmail.com';
+    }
+
+    function isAdmin() {
+      return isBootstrappedAdmin() || (
+        isVerifiedUser() && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isBoundedString(val, minLen, maxLen) {
+      return val is string && val.size() >= minLen && val.size() <= maxLen;
+    }
+
+    function isValidOptionalStringList(val, maxItems) {
+      return val is list && val.size() <= maxItems && (val.size() == 0 || val[0] is string);
+    }
+
+    // --- Validation Blueprints ---
+
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['uid', 'email', 'displayName', 'role', 'onboardingCompleted', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly([
+          'uid', 'email', 'displayName', 'photoURL', 'role', 'onboardingCompleted',
+          'college', 'degree', 'currentYear', 'graduationYear', 'country',
+          'targetRoleId', 'targetRoleName', 'careerDomain', 'targetCompanies',
+          'desiredIndustry', 'jobGoal', 'hoursPerWeek', 'learningStyle',
+          'budgetPreference', 'preferredLanguage', 'learningPace',
+          'streakDays', 'totalHoursStudied', 'portfolioPublic', 'portfolioSlug',
+          'createdAt', 'updatedAt'
+        ])
+        && isValidId(data.uid)
+        && isBoundedString(data.email, 3, 254)
+        && isBoundedString(data.displayName, 1, 120)
+        && (!('photoURL' in data) || isBoundedString(data.photoURL, 0, 500))
+        && (data.role == 'user' || data.role == 'admin')
+        && data.onboardingCompleted is bool
+        && (!('college' in data) || isBoundedString(data.college, 0, 160))
+        && (!('degree' in data) || isBoundedString(data.degree, 0, 120))
+        && (!('currentYear' in data) || isBoundedString(data.currentYear, 0, 40))
+        && (!('graduationYear' in data) || isBoundedString(data.graduationYear, 0, 10))
+        && (!('country' in data) || isBoundedString(data.country, 0, 80))
+        && (!('targetRoleId' in data) || isBoundedString(data.targetRoleId, 0, 80))
+        && (!('targetRoleName' in data) || isBoundedString(data.targetRoleName, 0, 120))
+        && (!('careerDomain' in data) || isBoundedString(data.careerDomain, 0, 80))
+        && (!('targetCompanies' in data) || isValidOptionalStringList(data.targetCompanies, 10))
+        && (!('desiredIndustry' in data) || isBoundedString(data.desiredIndustry, 0, 80))
+        && (!('jobGoal' in data) || isBoundedString(data.jobGoal, 0, 80))
+        && (!('hoursPerWeek' in data) || (data.hoursPerWeek is number && data.hoursPerWeek >= 0 && data.hoursPerWeek <= 100))
+        && (!('learningStyle' in data) || isBoundedString(data.learningStyle, 0, 60))
+        && (!('budgetPreference' in data) || data.budgetPreference in ['free_only', 'free_preferred', 'paid_ok'])
+        && (!('preferredLanguage' in data) || isBoundedString(data.preferredLanguage, 0, 40))
+        && (!('learningPace' in data) || data.learningPace in ['steady', 'intensive', 'flexible'])
+        && (!('streakDays' in data) || (data.streakDays is number && data.streakDays >= 0 && data.streakDays <= 10000))
+        && (!('totalHoursStudied' in data) || (data.totalHoursStudied is number && data.totalHoursStudied >= 0 && data.totalHoursStudied <= 50000))
+        && (!('portfolioPublic' in data) || data.portfolioPublic is bool)
+        && (!('portfolioSlug' in data) || isBoundedString(data.portfolioSlug, 0, 80))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidUserSkill(data, userId) {
+      return data.keys().hasAll(['id', 'userId', 'name', 'category', 'proficiency', 'currentlyLearning', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly([
+          'id', 'userId', 'name', 'category', 'proficiency', 'experienceMonths',
+          'lastPracticed', 'confidence', 'evidence', 'linkedProjectId',
+          'currentlyLearning', 'createdAt', 'updatedAt'
+        ])
+        && isValidId(data.id)
+        && data.userId == userId
+        && isBoundedString(data.name, 1, 80)
+        && isBoundedString(data.category, 1, 40)
+        && data.proficiency is int && data.proficiency >= 1 && data.proficiency <= 5
+        && (!('experienceMonths' in data) || (data.experienceMonths is int && data.experienceMonths >= 0 && data.experienceMonths <= 600))
+        && (!('lastPracticed' in data) || isBoundedString(data.lastPracticed, 0, 32))
+        && (!('confidence' in data) || (data.confidence is int && data.confidence >= 1 && data.confidence <= 5))
+        && (!('evidence' in data) || isBoundedString(data.evidence, 0, 300))
+        && (!('linkedProjectId' in data) || isBoundedString(data.linkedProjectId, 0, 80))
+        && data.currentlyLearning is bool
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidUserProject(data, userId) {
+      return data.keys().hasAll(['id', 'userId', 'title', 'description', 'status', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly([
+          'id', 'userId', 'title', 'description', 'techStack', 'skillsDemonstrated',
+          'githubUrl', 'liveUrl', 'status', 'userRole', 'achievements', 'aiReview',
+          'createdAt', 'updatedAt'
+        ])
+        && isValidId(data.id)
+        && data.userId == userId
+        && isBoundedString(data.title, 1, 140)
+        && isBoundedString(data.description, 1, 2000)
+        && (!('techStack' in data) || isValidOptionalStringList(data.techStack, 20))
+        && (!('skillsDemonstrated' in data) || isValidOptionalStringList(data.skillsDemonstrated, 20))
+        && (!('githubUrl' in data) || isBoundedString(data.githubUrl, 0, 400))
+        && (!('liveUrl' in data) || isBoundedString(data.liveUrl, 0, 400))
+        && data.status in ['idea', 'in_progress', 'completed']
+        && (!('userRole' in data) || isBoundedString(data.userRole, 0, 100))
+        && (!('achievements' in data) || isBoundedString(data.achievements, 0, 1000))
+        && (!('aiReview' in data) || data.aiReview is map)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidSkillGapAnalysis(data, userId) {
+      return data.keys().hasAll(['id', 'userId', 'targetRoleId', 'targetRoleName', 'readinessScore', 'overallMatchPercentage', 'createdAt'])
+        && data.keys().hasOnly([
+          'id', 'userId', 'targetRoleId', 'targetRoleName', 'readinessScore',
+          'overallMatchPercentage', 'matchedCount', 'improveCount', 'missingCount',
+          'estimatedHours', 'methodology', 'gapItems', 'aiReport', 'createdAt'
+        ])
+        && isValidId(data.id)
+        && data.userId == userId
+        && isBoundedString(data.targetRoleId, 1, 80)
+        && isBoundedString(data.targetRoleName, 1, 120)
+        && data.readinessScore is number && data.readinessScore >= 0 && data.readinessScore <= 100
+        && data.overallMatchPercentage is number && data.overallMatchPercentage >= 0 && data.overallMatchPercentage <= 100
+        && (!('matchedCount' in data) || (data.matchedCount is int && data.matchedCount >= 0 && data.matchedCount <= 200))
+        && (!('improveCount' in data) || (data.improveCount is int && data.improveCount >= 0 && data.improveCount <= 200))
+        && (!('missingCount' in data) || (data.missingCount is int && data.missingCount >= 0 && data.missingCount <= 200))
+        && (!('estimatedHours' in data) || (data.estimatedHours is number && data.estimatedHours >= 0 && data.estimatedHours <= 10000))
+        && (!('methodology' in data) || isBoundedString(data.methodology, 0, 600))
+        && (!('gapItems' in data) || (data.gapItems is list && data.gapItems.size() <= 40))
+        && (!('aiReport' in data) || data.aiReport is map)
+        && data.createdAt is timestamp;
+    }
+
+    function isValidRoadmap(data, userId) {
+      return data.keys().hasAll(['id', 'userId', 'title', 'targetRoleId', 'targetRoleName', 'durationDays', 'status', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly([
+          'id', 'userId', 'title', 'targetRoleId', 'targetRoleName',
+          'durationDays', 'hoursPerWeek', 'status', 'phases', 'createdAt', 'updatedAt'
+        ])
+        && isValidId(data.id)
+        && data.userId == userId
+        && isBoundedString(data.title, 1, 160)
+        && isBoundedString(data.targetRoleId, 1, 80)
+        && isBoundedString(data.targetRoleName, 1, 120)
+        && data.durationDays is int && data.durationDays >= 7 && data.durationDays <= 365
+        && (!('hoursPerWeek' in data) || (data.hoursPerWeek is number && data.hoursPerWeek >= 1 && data.hoursPerWeek <= 100))
+        && data.status in ['active', 'paused', 'completed']
+        && (!('phases' in data) || (data.phases is list && data.phases.size() <= 8))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidRoadmapTask(data, userId, roadmapId) {
+      return data.keys().hasAll(['id', 'userId', 'roadmapId', 'phaseIndex', 'phaseName', 'title', 'skillName', 'priority', 'status', 'orderIndex', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly([
+          'id', 'userId', 'roadmapId', 'phaseIndex', 'phaseName', 'title', 'description',
+          'skillName', 'priority', 'estimatedHours', 'startDate', 'dueDate',
+          'learningResource', 'assignment', 'status', 'orderIndex', 'createdAt', 'updatedAt'
+        ])
+        && isValidId(data.id)
+        && data.userId == userId
+        && data.roadmapId == roadmapId
+        && data.phaseIndex is int && data.phaseIndex >= 1 && data.phaseIndex <= 5
+        && isBoundedString(data.phaseName, 1, 80)
+        && isBoundedString(data.title, 1, 160)
+        && (!('description' in data) || isBoundedString(data.description, 0, 1200))
+        && isBoundedString(data.skillName, 1, 80)
+        && data.priority in ['high', 'medium', 'low']
+        && (!('estimatedHours' in data) || (data.estimatedHours is number && data.estimatedHours >= 0 && data.estimatedHours <= 500))
+        && (!('startDate' in data) || isBoundedString(data.startDate, 0, 32))
+        && (!('dueDate' in data) || isBoundedString(data.dueDate, 0, 32))
+        && (!('learningResource' in data) || isBoundedString(data.learningResource, 0, 300))
+        && (!('assignment' in data) || isBoundedString(data.assignment, 0, 400))
+        && data.status in ['not_started', 'in_progress', 'completed', 'skipped']
+        && data.orderIndex is int && data.orderIndex >= 0 && data.orderIndex <= 500
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidSavedResource(data, userId) {
+      return data.keys().hasAll(['id', 'userId', 'resourceId', 'title', 'skill', 'category', 'isFree', 'createdAt'])
+        && data.keys().hasOnly([
+          'id', 'userId', 'resourceId', 'title', 'skill', 'category',
+          'provider', 'url', 'isSearchSuggestion', 'isFree', 'difficulty', 'createdAt'
+        ])
+        && isValidId(data.id)
+        && data.userId == userId
+        && isBoundedString(data.resourceId, 1, 120)
+        && isBoundedString(data.title, 1, 160)
+        && isBoundedString(data.skill, 1, 80)
+        && isBoundedString(data.category, 1, 60)
+        && (!('provider' in data) || isBoundedString(data.provider, 0, 100))
+        && (!('url' in data) || isBoundedString(data.url, 0, 400))
+        && (!('isSearchSuggestion' in data) || data.isSearchSuggestion is bool)
+        && data.isFree is bool
+        && (!('difficulty' in data) || isBoundedString(data.difficulty, 0, 40))
+        && data.createdAt is timestamp;
+    }
+
+    function isValidProgressRecord(data, userId) {
+      return data.keys().hasAll(['id', 'userId', 'date', 'hoursStudied', 'tasksCompleted', 'createdAt'])
+        && data.keys().hasOnly([
+          'id', 'userId', 'date', 'hoursStudied', 'tasksCompleted',
+          'skillsImproved', 'readinessScore', 'note', 'createdAt'
+        ])
+        && isValidId(data.id)
+        && data.userId == userId
+        && isBoundedString(data.date, 1, 32)
+        && data.hoursStudied is number && data.hoursStudied >= 0 && data.hoursStudied <= 24
+        && data.tasksCompleted is int && data.tasksCompleted >= 0 && data.tasksCompleted <= 100
+        && (!('skillsImproved' in data) || (data.skillsImproved is int && data.skillsImproved >= 0 && data.skillsImproved <= 100))
+        && (!('readinessScore' in data) || (data.readinessScore is number && data.readinessScore >= 0 && data.readinessScore <= 100))
+        && (!('note' in data) || isBoundedString(data.note, 0, 300))
+        && data.createdAt is timestamp;
+    }
+
+    function isValidChatConversation(data, userId) {
+      return data.keys().hasAll(['id', 'userId', 'title', 'messageCount', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['id', 'userId', 'title', 'targetRoleName', 'messageCount', 'createdAt', 'updatedAt'])
+        && isValidId(data.id)
+        && data.userId == userId
+        && isBoundedString(data.title, 1, 140)
+        && (!('targetRoleName' in data) || isBoundedString(data.targetRoleName, 0, 120))
+        && data.messageCount is int && data.messageCount >= 0 && data.messageCount <= 5000
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidChatMessage(data, userId, convId) {
+      return data.keys().hasAll(['id', 'userId', 'conversationId', 'role', 'content', 'createdAt'])
+        && data.keys().hasOnly(['id', 'userId', 'conversationId', 'role', 'content', 'createdAt'])
+        && isValidId(data.id)
+        && data.userId == userId
+        && data.conversationId == convId
+        && data.role in ['user', 'assistant']
+        && isBoundedString(data.content, 1, 12000)
+        && data.createdAt is timestamp;
+    }
+
+    function isValidNotification(data, userId) {
+      return data.keys().hasAll(['id', 'userId', 'title', 'message', 'type', 'read', 'createdAt'])
+        && data.keys().hasOnly(['id', 'userId', 'title', 'message', 'type', 'read', 'createdAt'])
+        && isValidId(data.id)
+        && data.userId == userId
+        && isBoundedString(data.title, 1, 140)
+        && isBoundedString(data.message, 1, 500)
+        && data.type in ['analysis', 'roadmap', 'milestone', 'system']
+        && data.read is bool
+        && data.createdAt is timestamp;
+    }
+
+    function isValidCareerRole(data) {
+      return data.keys().hasAll(['id', 'name', 'domain', 'seniorityLevel', 'description', 'isPublished', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly([
+          'id', 'name', 'domain', 'seniorityLevel', 'description', 'isPublished',
+          'requiredSkills', 'importantSkills', 'optionalSkills',
+          'exampleResponsibilities', 'careerProgression', 'createdAt', 'updatedAt'
+        ])
+        && isValidId(data.id)
+        && isBoundedString(data.name, 1, 120)
+        && isBoundedString(data.domain, 1, 80)
+        && isBoundedString(data.seniorityLevel, 1, 60)
+        && isBoundedString(data.description, 1, 1200)
+        && data.isPublished is bool
+        && (!('requiredSkills' in data) || (data.requiredSkills is list && data.requiredSkills.size() <= 30))
+        && (!('importantSkills' in data) || (data.importantSkills is list && data.importantSkills.size() <= 30))
+        && (!('optionalSkills' in data) || (data.optionalSkills is list && data.optionalSkills.size() <= 30))
+        && (!('exampleResponsibilities' in data) || isValidOptionalStringList(data.exampleResponsibilities, 15))
+        && (!('careerProgression' in data) || isValidOptionalStringList(data.careerProgression, 10))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidSharedPortfolio(data, slug) {
+      return data.keys().hasAll(['slug', 'userId', 'ownerName', 'isPublic', 'updatedAt'])
+        && data.keys().hasOnly([
+          'slug', 'userId', 'ownerName', 'targetRoleName', 'college', 'degree',
+          'isPublic', 'skills', 'projects', 'updatedAt'
+        ])
+        && isValidId(data.slug)
+        && data.slug == slug
+        && isValidId(data.userId)
+        && isBoundedString(data.ownerName, 1, 120)
+        && (!('targetRoleName' in data) || isBoundedString(data.targetRoleName, 0, 120))
+        && (!('college' in data) || isBoundedString(data.college, 0, 160))
+        && (!('degree' in data) || isBoundedString(data.degree, 0, 120))
+        && data.isPublic is bool
+        && (!('skills' in data) || (data.skills is list && data.skills.size() <= 50))
+        && (!('projects' in data) || (data.projects is list && data.projects.size() <= 30))
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidAdminActivity(data) {
+      return data.keys().hasAll(['id', 'adminUid', 'adminEmail', 'action', 'createdAt'])
+        && data.keys().hasOnly(['id', 'adminUid', 'adminEmail', 'action', 'targetId', 'details', 'createdAt'])
+        && isValidId(data.id)
+        && isValidId(data.adminUid)
+        && isBoundedString(data.adminEmail, 3, 254)
+        && isBoundedString(data.action, 1, 120)
+        && (!('targetId' in data) || isBoundedString(data.targetId, 0, 128))
+        && (!('details' in data) || isBoundedString(data.details, 0, 500))
+        && data.createdAt is timestamp;
+    }
+
+    // --- Collection Rules ---
+
+    match /users/{userId} {
+      allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
+      allow list: if isBootstrappedAdmin();
+
+      allow create: if isValidId(userId)
+        && isOwner(userId)
+        && isValidUserProfile(incoming())
+        && incoming().uid == userId
+        && (incoming().role == 'user' || isBootstrappedAdmin())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      allow update: if isValidId(userId)
+        && isValidUserProfile(incoming())
+        && incoming().uid == existing().uid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          (isAdmin() && incoming().diff(existing()).affectedKeys().hasOnly([
+            'displayName', 'role', 'onboardingCompleted', 'targetRoleId', 'targetRoleName', 'updatedAt'
+          ])) ||
+          (isOwner(userId)
+            && incoming().role == existing().role
+            && incoming().diff(existing()).affectedKeys().hasOnly([
+              'displayName', 'photoURL', 'onboardingCompleted', 'college', 'degree',
+              'currentYear', 'graduationYear', 'country', 'targetRoleId', 'targetRoleName',
+              'careerDomain', 'targetCompanies', 'desiredIndustry', 'jobGoal',
+              'hoursPerWeek', 'learningStyle', 'budgetPreference', 'preferredLanguage',
+              'learningPace', 'streakDays', 'totalHoursStudied', 'portfolioPublic',
+              'portfolioSlug', 'updatedAt'
+            ])
+          )
+        );
+
+      allow delete: if isValidId(userId) && (isOwner(userId) || isAdmin());
+
+      match /skills/{skillId} {
+        allow get: if isValidId(userId) && isValidId(skillId) && (isOwner(userId) || isAdmin());
+        allow list: if isValidId(userId) && (isOwner(userId) || isBootstrappedAdmin()) && existing().userId == userId;
+        allow create: if isValidId(userId) && isValidId(skillId)
+          && isOwner(userId)
+          && isValidUserSkill(incoming(), userId)
+          && incoming().id == skillId
+          && incoming().createdAt == request.time
+          && incoming().updatedAt == request.time
+          && exists(/databases/$(database)/documents/users/$(userId));
+        allow update: if isValidId(userId) && isValidId(skillId)
+          && isOwner(userId)
+          && isValidUserSkill(incoming(), userId)
+          && incoming().id == existing().id
+          && incoming().userId == existing().userId
+          && incoming().createdAt == existing().createdAt
+          && incoming().updatedAt == request.time
+          && incoming().diff(existing()).affectedKeys().hasOnly([
+            'name', 'category', 'proficiency', 'experienceMonths', 'lastPracticed',
+            'confidence', 'evidence', 'linkedProjectId', 'currentlyLearning', 'updatedAt'
+          ]);
+        allow delete: if isValidId(userId) && isValidId(skillId) && isOwner(userId);
+      }
+
+      match /projects/{projectId} {
+        allow get: if isValidId(userId) && isValidId(projectId) && (isOwner(userId) || isAdmin());
+        allow list: if isValidId(userId) && (isOwner(userId) || isBootstrappedAdmin()) && existing().userId == userId;
+        allow create: if isValidId(userId) && isValidId(projectId)
+          && isOwner(userId)
+          && isValidUserProject(incoming(), userId)
+          && incoming().id == projectId
+          && incoming().createdAt == request.time
+          && incoming().updatedAt == request.time
+          && exists(/databases/$(database)/documents/users/$(userId));
+        allow update: if isValidId(userId) && isValidId(projectId)
+          && isOwner(userId)
+          && isValidUserProject(incoming(), userId)
+          && incoming().id == existing().id
+          && incoming().userId == existing().userId
+          && incoming().createdAt == existing().createdAt
+          && incoming().updatedAt == request.time
+          && incoming().diff(existing()).affectedKeys().hasOnly([
+            'title', 'description', 'techStack', 'skillsDemonstrated',
+            'githubUrl', 'liveUrl', 'status', 'userRole', 'achievements',
+            'aiReview', 'updatedAt'
+          ]);
+        allow delete: if isValidId(userId) && isValidId(projectId) && isOwner(userId);
+      }
+
+      match /analyses/{analysisId} {
+        allow get: if isValidId(userId) && isValidId(analysisId) && (isOwner(userId) || isAdmin());
+        allow list: if isValidId(userId) && (isOwner(userId) || isBootstrappedAdmin()) && existing().userId == userId;
+        allow create: if isValidId(userId) && isValidId(analysisId)
+          && isOwner(userId)
+          && isValidSkillGapAnalysis(incoming(), userId)
+          && incoming().id == analysisId
+          && incoming().createdAt == request.time
+          && exists(/databases/$(database)/documents/users/$(userId));
+        allow update: if false;
+        allow delete: if isValidId(userId) && isValidId(analysisId) && isOwner(userId);
+      }
+
+      match /roadmaps/{roadmapId} {
+        allow get: if isValidId(userId) && isValidId(roadmapId) && (isOwner(userId) || isAdmin());
+        allow list: if isValidId(userId) && (isOwner(userId) || isBootstrappedAdmin()) && existing().userId == userId;
+        allow create: if isValidId(userId) && isValidId(roadmapId)
+          && isOwner(userId)
+          && isValidRoadmap(incoming(), userId)
+          && incoming().id == roadmapId
+          && incoming().createdAt == request.time
+          && incoming().updatedAt == request.time
+          && exists(/databases/$(database)/documents/users/$(userId));
+        allow update: if isValidId(userId) && isValidId(roadmapId)
+          && isOwner(userId)
+          && isValidRoadmap(incoming(), userId)
+          && incoming().id == existing().id
+          && incoming().userId == existing().userId
+          && incoming().createdAt == existing().createdAt
+          && incoming().updatedAt == request.time
+          && incoming().diff(existing()).affectedKeys().hasOnly(['title', 'status', 'phases', 'updatedAt']);
+        allow delete: if isValidId(userId) && isValidId(roadmapId) && isOwner(userId);
+
+        match /tasks/{taskId} {
+          allow get: if isValidId(userId) && isValidId(roadmapId) && isValidId(taskId) && (isOwner(userId) || isAdmin());
+          allow list: if isValidId(userId) && isValidId(roadmapId) && isOwner(userId) && existing().userId == userId;
+          allow create: if isValidId(userId) && isValidId(roadmapId) && isValidId(taskId)
+            && isOwner(userId)
+            && isValidRoadmapTask(incoming(), userId, roadmapId)
+            && incoming().id == taskId
+            && incoming().createdAt == request.time
+            && incoming().updatedAt == request.time
+            && exists(/databases/$(database)/documents/users/$(userId)/roadmaps/$(roadmapId));
+          allow update: if isValidId(userId) && isValidId(roadmapId) && isValidId(taskId)
+            && isOwner(userId)
+            && isValidRoadmapTask(incoming(), userId, roadmapId)
+            && incoming().id == existing().id
+            && incoming().userId == existing().userId
+            && incoming().roadmapId == existing().roadmapId
+            && incoming().createdAt == existing().createdAt
+            && incoming().updatedAt == request.time
+            && incoming().diff(existing()).affectedKeys().hasOnly([
+              'phaseIndex', 'phaseName', 'title', 'description', 'skillName', 'priority',
+              'estimatedHours', 'startDate', 'dueDate', 'learningResource',
+              'assignment', 'status', 'orderIndex', 'updatedAt'
+            ]);
+          allow delete: if isValidId(userId) && isValidId(roadmapId) && isValidId(taskId) && isOwner(userId);
+        }
+      }
+
+      match /bookmarks/{bookmarkId} {
+        allow get: if isValidId(userId) && isValidId(bookmarkId) && isOwner(userId);
+        allow list: if isValidId(userId) && isOwner(userId) && existing().userId == userId;
+        allow create: if isValidId(userId) && isValidId(bookmarkId)
+          && isOwner(userId)
+          && isValidSavedResource(incoming(), userId)
+          && incoming().id == bookmarkId
+          && incoming().createdAt == request.time
+          && exists(/databases/$(database)/documents/users/$(userId));
+        allow update: if false;
+        allow delete: if isValidId(userId) && isValidId(bookmarkId) && isOwner(userId);
+      }
+
+      match /progress/{recordId} {
+        allow get: if isValidId(userId) && isValidId(recordId) && isOwner(userId);
+        allow list: if isValidId(userId) && isOwner(userId) && existing().userId == userId;
+        allow create: if isValidId(userId) && isValidId(recordId)
+          && isOwner(userId)
+          && isValidProgressRecord(incoming(), userId)
+          && incoming().id == recordId
+          && incoming().createdAt == request.time
+          && exists(/databases/$(database)/documents/users/$(userId));
+        allow update: if false;
+        allow delete: if isValidId(userId) && isValidId(recordId) && isOwner(userId);
+      }
+
+      match /conversations/{convId} {
+        allow get: if isValidId(userId) && isValidId(convId) && isOwner(userId);
+        allow list: if isValidId(userId) && isOwner(userId) && existing().userId == userId;
+        allow create: if isValidId(userId) && isValidId(convId)
+          && isOwner(userId)
+          && isValidChatConversation(incoming(), userId)
+          && incoming().id == convId
+          && incoming().createdAt == request.time
+          && incoming().updatedAt == request.time
+          && exists(/databases/$(database)/documents/users/$(userId));
+        allow update: if isValidId(userId) && isValidId(convId)
+          && isOwner(userId)
+          && isValidChatConversation(incoming(), userId)
+          && incoming().id == existing().id
+          && incoming().userId == existing().userId
+          && incoming().createdAt == existing().createdAt
+          && incoming().updatedAt == request.time
+          && incoming().diff(existing()).affectedKeys().hasOnly(['title', 'messageCount', 'updatedAt']);
+        allow delete: if isValidId(userId) && isValidId(convId) && isOwner(userId);
+
+        match /messages/{messageId} {
+          allow get: if isValidId(userId) && isValidId(convId) && isValidId(messageId) && isOwner(userId);
+          allow list: if isValidId(userId) && isValidId(convId) && isOwner(userId) && existing().userId == userId;
+          allow create: if isValidId(userId) && isValidId(convId) && isValidId(messageId)
+            && isOwner(userId)
+            && isValidChatMessage(incoming(), userId, convId)
+            && incoming().id == messageId
+            && incoming().createdAt == request.time
+            && exists(/databases/$(database)/documents/users/$(userId)/conversations/$(convId));
+          allow update: if false;
+          allow delete: if isValidId(userId) && isValidId(convId) && isValidId(messageId) && isOwner(userId);
+        }
+      }
+
+      match /notifications/{notifId} {
+        allow get: if isValidId(userId) && isValidId(notifId) && isOwner(userId);
+        allow list: if isValidId(userId) && isOwner(userId) && existing().userId == userId;
+        allow create: if isValidId(userId) && isValidId(notifId)
+          && isOwner(userId)
+          && isValidNotification(incoming(), userId)
+          && incoming().id == notifId
+          && incoming().createdAt == request.time
+          && exists(/databases/$(database)/documents/users/$(userId));
+        allow update: if isValidId(userId) && isValidId(notifId)
+          && isOwner(userId)
+          && isValidNotification(incoming(), userId)
+          && incoming().id == existing().id
+          && incoming().userId == existing().userId
+          && incoming().createdAt == existing().createdAt
+          && incoming().diff(existing()).affectedKeys().hasOnly(['read']);
+        allow delete: if isValidId(userId) && isValidId(notifId) && isOwner(userId);
+      }
+    }
+
+    match /careers/{careerId} {
+      allow get: if isValidId(careerId) && (existing().isPublished == true || isAdmin());
+      allow list: if existing().isPublished == true || isBootstrappedAdmin();
+      allow create: if isValidId(careerId)
+        && isAdmin()
+        && isValidCareerRole(incoming())
+        && incoming().id == careerId
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(careerId)
+        && isAdmin()
+        && isValidCareerRole(incoming())
+        && incoming().id == existing().id
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'name', 'domain', 'seniorityLevel', 'description', 'isPublished',
+          'requiredSkills', 'importantSkills', 'optionalSkills',
+          'exampleResponsibilities', 'careerProgression', 'updatedAt'
+        ]);
+      allow delete: if isValidId(careerId) && isAdmin();
+    }
+
+    match /sharedPortfolios/{slug} {
+      allow get: if isValidId(slug) && (existing().isPublic == true || (isVerifiedUser() && existing().userId == request.auth.uid) || isAdmin());
+      allow list: if existing().isPublic == true || (isVerifiedUser() && existing().userId == request.auth.uid) || isBootstrappedAdmin();
+      allow create: if isValidId(slug)
+        && isVerifiedUser()
+        && isValidSharedPortfolio(incoming(), slug)
+        && incoming().userId == request.auth.uid
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(slug)
+        && isVerifiedUser()
+        && isValidSharedPortfolio(incoming(), slug)
+        && incoming().userId == existing().userId
+        && incoming().userId == request.auth.uid
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'ownerName', 'targetRoleName', 'college', 'degree', 'isPublic', 'skills', 'projects', 'updatedAt'
+        ]);
+      allow delete: if isValidId(slug) && ((isVerifiedUser() && existing().userId == request.auth.uid) || isAdmin());
+    }
+
+    match /admins/{adminUid} {
+      allow get: if isValidId(adminUid) && (isOwner(adminUid) || isBootstrappedAdmin());
+      allow list: if isBootstrappedAdmin();
+      allow create, update, delete: if isValidId(adminUid) && isBootstrappedAdmin();
+    }
+
+    match /adminActivity/{activityId} {
+      allow get: if isValidId(activityId) && isAdmin();
+      allow list: if isBootstrappedAdmin();
+      allow create: if isValidId(activityId)
+        && isAdmin()
+        && isValidAdminActivity(incoming())
+        && incoming().id == activityId
+        && incoming().adminUid == request.auth.uid
+        && incoming().createdAt == request.time;
+      allow update, delete: if false;
+    }
+  }
+}

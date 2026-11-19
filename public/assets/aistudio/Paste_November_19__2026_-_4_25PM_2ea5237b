@@ -1,0 +1,1301 @@
+# MASTER DEVELOPMENT PROMPT — SKILLGRAPH AI
+
+Act as a senior full-stack software architect, senior React/TypeScript engineer, backend engineer, database architect, AI engineer, product designer, cybersecurity engineer, and QA engineer.
+
+Build a complete, production-quality, full-stack web application named:
+
+# SkillGraph AI
+### AI-Powered Skill Gap Analysis & Career Roadmap Engine
+
+Do not build a basic chatbot, static dashboard, simple landing page, or UI-only prototype.
+
+Build a real application with a polished frontend, backend API, database architecture, authentication, AI-powered analysis, CRUD operations, validation, loading states, error handling, responsive design, and real user workflows.
+
+Think like a senior engineer. Make architectural decisions carefully. Build modular, maintainable, scalable code.
+
+---
+
+# 1. PRODUCT VISION
+
+SkillGraph AI helps college students, fresh graduates, job seekers and aspiring software engineers understand where they stand in their chosen career and what they should learn next.
+
+Users should be able to:
+
+1. Create an account.
+2. Complete their career profile.
+3. Add technical and soft skills.
+4. Add education, experience and projects.
+5. Select a target career or job role.
+6. Analyze their current skills against their target role.
+7. Identify missing skills and skill gaps.
+8. Receive a personalized career-readiness score.
+9. Generate a structured learning roadmap.
+10. Receive project recommendations for missing skills.
+11. Track learning progress.
+12. Update their skills based on learning and project completion.
+13. Recalculate their skill-gap analysis.
+14. View progress analytics and career-readiness improvements.
+
+The product must feel like a modern professional SaaS platform suitable for students, universities, placement cells, career mentors and recruiters.
+
+---
+
+# 2. DESIGN AND USER EXPERIENCE
+
+Create a sophisticated, professional SaaS design.
+
+Design direction:
+- Modern career intelligence platform.
+- Clean, premium, professional and minimal.
+- Excellent visual hierarchy.
+- Responsive desktop, tablet and mobile layouts.
+- Avoid generic AI-generated website appearance.
+- Avoid excessive gradients and unnecessary animations.
+- Use consistent spacing and typography.
+- Use reusable design components.
+- Make every page visually polished.
+
+Color palette:
+- Primary: deep navy or dark slate.
+- Secondary: professional indigo.
+- Accent: teal or emerald for progress and success.
+- Background: light neutral gray.
+- Cards: white with subtle borders.
+- Text: dark charcoal with accessible contrast.
+- Optional dark mode.
+
+Typography:
+- Inter or another modern professional font.
+- Clear headings.
+- Readable body text.
+- Consistent text hierarchy.
+
+Use:
+- Sidebar navigation on desktop.
+- Collapsible navigation on mobile.
+- Top navigation with user profile, notifications and settings.
+- Cards, charts, progress bars, badges, tables and empty states.
+- Lucide icons.
+- Toast notifications.
+- Confirmation dialogs for destructive actions.
+- Skeleton loading states.
+- Proper accessibility labels.
+- Keyboard navigation.
+
+Create a coherent design system with reusable components.
+
+---
+
+# 3. LANDING PAGE
+
+Create a professional marketing landing page.
+
+Sections:
+
+1. Navigation bar
+   - SkillGraph AI logo.
+   - Features.
+   - How It Works.
+   - Career Paths.
+   - Login.
+   - Get Started.
+
+2. Hero section
+   Headline:
+   "Know Your Skills. Close Your Gaps. Build Your Career."
+
+   Subheadline:
+   "AI-powered career intelligence that transforms your current skills into a personalized roadmap for your dream role."
+
+   CTA:
+   - Analyze My Skills
+   - Explore Career Paths
+
+   Include an attractive dashboard preview.
+
+3. Problem section
+   Explain:
+   - Students don't know which skills companies expect.
+   - Learning is often random.
+   - Students struggle to identify skill gaps.
+   - They don't know which projects will improve their employability.
+
+4. Solution section
+   Show:
+   - Skill assessment.
+   - Career gap analysis.
+   - Personalized learning roadmap.
+   - Project recommendations.
+   - Progress tracking.
+
+5. How it works
+   Step 1: Build your profile.
+   Step 2: Select your target role.
+   Step 3: Analyze your skill gaps.
+   Step 4: Follow your roadmap.
+   Step 5: Build projects and track readiness.
+
+6. Features section.
+
+7. Supported career paths.
+
+8. Impact and benefits.
+
+9. CTA section.
+
+10. Footer with navigation, policies and links.
+
+Make the landing page fully responsive and professionally designed.
+
+---
+
+# 4. AUTHENTICATION
+
+Implement actual authentication functionality.
+
+Pages:
+- Register.
+- Login.
+- Forgot password.
+- Password reset.
+- Logout.
+
+Registration fields:
+- Full name.
+- Email.
+- Password.
+- Confirm password.
+
+Requirements:
+- Password validation.
+- Email validation.
+- Secure password hashing on the backend.
+- Protected routes.
+- Authentication persistence.
+- Proper error messages.
+- Prevent unauthorized API access.
+- Secure session/token handling.
+- Never expose passwords or secret tokens.
+- Logout must clear authentication.
+
+Do not use a hardcoded fake login.
+
+If external OAuth cannot be configured, implement email/password authentication and provide documented instructions for OAuth integration.
+
+---
+
+# 5. USER ONBOARDING
+
+After registration, guide the user through a multi-step onboarding wizard.
+
+Step 1 — Personal Information
+- Name.
+- College/university.
+- Degree.
+- Current year.
+- Graduation year.
+- Country.
+- Optional profile picture.
+
+Step 2 — Career Interests
+- Target career role.
+- Career domain.
+- Target companies.
+- Desired industry.
+- Internship/job goal.
+
+Step 3 — Current Skills
+- Add technical skills.
+- Add programming languages.
+- Add frameworks.
+- Add databases.
+- Add tools.
+- Add soft skills.
+
+Step 4 — Skill Level
+For each skill:
+- Beginner.
+- Basic.
+- Intermediate.
+- Advanced.
+- Expert.
+
+Allow users to add years/months of experience if relevant.
+
+Step 5 — Learning Preferences
+- Hours available per week.
+- Preferred learning style.
+- Budget: free resources preferred, optional paid.
+- Preferred language.
+- Learning pace.
+
+Step 6 — Projects and Experience
+- Project title.
+- Description.
+- Technologies.
+- GitHub URL.
+- Live demo URL.
+- Project status.
+- User's role.
+- Skills demonstrated.
+
+Step 7 — Review
+Show a profile summary and allow editing.
+
+Save onboarding data in the database.
+
+Users should be able to edit their profile later.
+
+---
+
+# 6. CAREER ROLE DATABASE
+
+Create a career-role catalog with structured skill requirements.
+
+Initially include:
+
+1. Software Development Engineer.
+2. Full Stack Developer.
+3. Frontend Developer.
+4. Backend Developer.
+5. Java Developer.
+6. Python Developer.
+7. Data Analyst.
+8. Data Scientist.
+9. Machine Learning Engineer.
+10. AI Engineer.
+11. Cybersecurity Analyst.
+12. Cloud Engineer.
+13. DevOps Engineer.
+14. QA Automation Engineer.
+15. UI/UX Designer.
+
+For each career role store:
+
+- Role name.
+- Role description.
+- Career domain.
+- Seniority level.
+- Required skills.
+- Important skills.
+- Optional skills.
+- Skill importance weights.
+- Suggested projects.
+- Recommended learning resources.
+- Example responsibilities.
+- Career progression.
+
+Make the role database extensible so administrators can add new career paths.
+
+Do not pretend that requirements represent every company. Clearly indicate that career requirements are estimates and may vary by job posting and employer.
+
+---
+
+# 7. SKILL MANAGEMENT
+
+Create a Skills page.
+
+Users should be able to:
+
+- Add skills.
+- Edit skills.
+- Delete skills.
+- Search skills.
+- Categorize skills.
+- Set proficiency.
+- Add experience duration.
+- Add evidence.
+- Link a project to a skill.
+- Mark a skill as currently learning.
+
+Skill categories:
+
+- Programming languages.
+- Frontend.
+- Backend.
+- Database.
+- AI/ML.
+- Data.
+- Cloud.
+- DevOps.
+- Cybersecurity.
+- Testing.
+- Tools.
+- Soft skills.
+
+For each skill store:
+
+- Skill name.
+- Category.
+- Proficiency level.
+- Experience duration.
+- Last practiced date.
+- Confidence level.
+- Evidence/project.
+- Learning status.
+
+Create visual skill cards and a skill proficiency chart.
+
+---
+
+# 8. CORE FEATURE — AI SKILL GAP ANALYSIS
+
+This is the most important feature.
+
+Create an analysis engine that compares the user's profile against their selected career role.
+
+Inputs:
+
+- Target career role.
+- Current skills.
+- Skill proficiency.
+- Projects.
+- Experience.
+- Education.
+- Learning hours per week.
+- Career goals.
+
+The system should identify:
+
+A. Skills the user already has.
+
+B. Skills that need improvement.
+
+C. Skills completely missing.
+
+D. High-priority skills.
+
+E. Medium-priority skills.
+
+F. Low-priority skills.
+
+G. Skills that can be demonstrated through projects.
+
+H. Recommended order for learning.
+
+I. Estimated readiness.
+
+For each skill-gap item return:
+
+- Skill name.
+- User's current proficiency.
+- Target proficiency.
+- Importance score.
+- Gap score.
+- Priority.
+- Reason this skill matters.
+- Recommended learning approach.
+- Estimated learning duration.
+- Recommended project.
+- Learning resources.
+
+Use a transparent scoring model.
+
+Suggested proficiency mapping:
+
+Beginner = 1
+Basic = 2
+Intermediate = 3
+Advanced = 4
+Expert = 5
+
+Use a weighted skill-match calculation.
+
+Do not simply generate a random percentage.
+
+Display the methodology to the user.
+
+The readiness score must be clearly described as an approximate self-assessment indicator, not an employment guarantee.
+
+Use both:
+1. Deterministic backend calculations.
+2. AI-generated explanations and recommendations.
+
+AI must not be responsible for calculating basic numerical scores when deterministic calculations can do it reliably.
+
+---
+
+# 9. AI ANALYSIS REPORT
+
+After the user clicks "Analyze My Career Readiness", generate a detailed report.
+
+Report sections:
+
+1. Career readiness overview.
+2. Overall skill match percentage.
+3. Strengths.
+4. Critical skill gaps.
+5. Skills to improve.
+6. Missing skills.
+7. Recommended learning sequence.
+8. Project recommendations.
+9. Portfolio improvement suggestions.
+10. Interview preparation suggestions.
+11. Recommended weekly schedule.
+12. Estimated learning duration.
+13. Career-specific advice.
+14. Action plan for the next 30 days.
+
+Include a clear disclaimer:
+
+"SkillGraph AI provides educational career guidance and estimates based on the information provided. It does not guarantee employment or represent official hiring criteria."
+
+Allow:
+- Save report.
+- Generate new analysis.
+- Export report as PDF.
+- Compare previous analyses.
+
+Store analysis history in the database.
+
+---
+
+# 10. PERSONALIZED ROADMAP ENGINE
+
+Generate a personalized learning roadmap.
+
+Allow:
+- 30-day roadmap.
+- 60-day roadmap.
+- 90-day roadmap.
+- Custom duration.
+
+Roadmap structure:
+
+Phase 1 — Foundation.
+Phase 2 — Core skills.
+Phase 3 — Advanced skills.
+Phase 4 — Projects and portfolio.
+Phase 5 — Interview and job preparation.
+
+Each roadmap task must include:
+
+- Task title.
+- Description.
+- Skill associated with the task.
+- Priority.
+- Duration estimate.
+- Start date.
+- Due date.
+- Learning resource.
+- Project/assignment.
+- Status.
+
+Task status:
+- Not Started.
+- In Progress.
+- Completed.
+- Skipped.
+
+Users should be able to:
+- Mark tasks completed.
+- Edit tasks.
+- Add tasks.
+- Delete tasks.
+- Reorder tasks.
+- Pause roadmap.
+- Resume roadmap.
+- Regenerate roadmap.
+- View calendar/timeline.
+- View completion progress.
+
+Do not generate meaningless generic tasks.
+
+The roadmap should depend on:
+- User's existing knowledge.
+- Career target.
+- Skill gaps.
+- Available hours.
+- Preferred learning style.
+- Roadmap duration.
+
+---
+
+# 11. PROJECT RECOMMENDATION ENGINE
+
+Recommend practical projects that help users demonstrate missing skills.
+
+Each project recommendation should include:
+
+- Project name.
+- Problem statement.
+- Project objective.
+- Difficulty.
+- Estimated duration.
+- Skills covered.
+- Tech stack.
+- Features.
+- Milestones.
+- Deliverables.
+- GitHub portfolio suggestions.
+- Optional advanced features.
+
+Recommend:
+- Beginner projects.
+- Intermediate projects.
+- Advanced projects.
+
+Ensure the projects are relevant to the user's selected career.
+
+Avoid generic recommendations such as "build a calculator" unless it is specifically appropriate for a beginner learning the relevant fundamentals.
+
+Allow users to:
+- Save project ideas.
+- Add projects to their portfolio.
+- Track project progress.
+- Record GitHub links.
+- Record demo links.
+- Update project status.
+
+---
+
+# 12. LEARNING RESOURCE RECOMMENDATIONS
+
+Recommend learning resources for each skill gap.
+
+Resource categories:
+
+- Official documentation.
+- Free courses.
+- YouTube.
+- Interactive practice.
+- Coding platforms.
+- Books.
+- Project tutorials.
+
+Resource record:
+
+- Resource name.
+- Skill.
+- Resource type.
+- Provider.
+- URL.
+- Free/paid.
+- Difficulty.
+- Description.
+- Estimated duration.
+
+Prioritize free resources when the user selects a free learning preference.
+
+Do not invent URLs.
+
+When resource URLs are unavailable or cannot be verified, clearly label the resource as a search suggestion rather than a verified link.
+
+Allow users to bookmark resources.
+
+---
+
+# 13. DASHBOARD
+
+Build a professional authenticated dashboard.
+
+Show:
+
+- Greeting with user's name.
+- Target career.
+- Career readiness score.
+- Current skill match.
+- Skills learned.
+- Skills remaining.
+- Active roadmap.
+- Weekly learning progress.
+- Current streak.
+- Completed tasks.
+- Recommended next task.
+- Upcoming deadlines.
+- Project progress.
+- Skill growth chart.
+- Learning hours chart.
+- Skill-gap summary.
+- Latest AI analysis.
+
+Dashboard should be data-driven.
+
+Every card should reflect real user data.
+
+Add useful empty states for new users.
+
+If the user has not completed onboarding, show an onboarding CTA.
+
+---
+
+# 14. CAREER EXPLORER
+
+Create a career exploration page.
+
+Features:
+
+- Search roles.
+- Filter by career domain.
+- Filter by difficulty.
+- Explore career descriptions.
+- View required skills.
+- View optional skills.
+- View responsibilities.
+- View suggested projects.
+- Compare two roles.
+
+When comparing roles, show:
+
+- Required skills.
+- Skill overlap with user's profile.
+- Skill gaps for each role.
+- Estimated preparation time.
+- Recommended role based on current skills.
+
+Do not make unsupported salary promises.
+
+If salary data is added later, it must have a source and date.
+
+---
+
+# 15. PORTFOLIO
+
+Create a portfolio management page.
+
+Users can add:
+
+- Project name.
+- Description.
+- Tech stack.
+- Skills demonstrated.
+- GitHub URL.
+- Live demo.
+- Screenshots.
+- Project status.
+- Project achievements.
+
+Provide AI-powered portfolio feedback.
+
+AI should evaluate:
+
+- Project relevance to target career.
+- Skill demonstration.
+- Project complexity.
+- Documentation.
+- Code repository presentation.
+- Missing features.
+
+Provide actionable improvements.
+
+Allow the user to create a shareable portfolio profile.
+
+Users must control visibility and privacy.
+
+---
+
+# 16. PROGRESS TRACKING
+
+Track:
+
+- Learning tasks completed.
+- Skills improved.
+- Hours studied.
+- Projects completed.
+- Roadmap completion.
+- Weekly consistency.
+- Skill readiness changes.
+
+Create charts:
+
+- Skill progress over time.
+- Roadmap completion.
+- Weekly learning hours.
+- Skills by category.
+- Before/after skill-gap comparison.
+
+Use Recharts.
+
+Do not fabricate historical progress.
+
+If no data exists, show empty states or clearly marked sample data in demo mode.
+
+---
+
+# 17. AI CAREER COACH
+
+Create a contextual AI career coach.
+
+It should understand:
+
+- User profile.
+- Target role.
+- Skills.
+- Skill gaps.
+- Roadmap.
+- Projects.
+- Learning progress.
+
+Features:
+
+- Ask career questions.
+- Explain skills.
+- Explain technical concepts.
+- Recommend next steps.
+- Review learning plans.
+- Help with project ideas.
+- Give interview preparation guidance.
+- Review portfolio.
+- Explain why a skill is important.
+
+The AI should not answer every question with the same generic response.
+
+Use contextual prompt construction.
+
+Use the Gemini API securely from the backend.
+
+Never expose API keys in frontend source code.
+
+Add:
+- Loading states.
+- Retry.
+- Error handling.
+- Chat history.
+- Conversation management.
+- Clear chat.
+
+---
+
+# 18. ADMIN PANEL
+
+Create a protected administrator panel.
+
+Admin features:
+
+- Admin authentication and authorization.
+- Dashboard analytics.
+- User management.
+- Career role management.
+- Skill catalog management.
+- Resource management.
+- Project template management.
+- View platform activity.
+- Manage user reports.
+- Basic system health information.
+
+Normal users must not access admin endpoints.
+
+Implement role-based access control.
+
+Never rely only on hiding admin pages in the frontend.
+
+---
+
+# 19. DATABASE ARCHITECTURE
+
+Use PostgreSQL and Prisma.
+
+Create database models for:
+
+- User.
+- UserProfile.
+- Education.
+- CareerGoal.
+- Skill.
+- UserSkill.
+- CareerRole.
+- CareerRoleSkill.
+- SkillGapAnalysis.
+- SkillGapItem.
+- Roadmap.
+- RoadmapPhase.
+- RoadmapTask.
+- ProjectRecommendation.
+- UserProject.
+- LearningResource.
+- SavedResource.
+- ProgressRecord.
+- ChatConversation.
+- ChatMessage.
+- Portfolio.
+- Notification.
+- AdminActivity.
+
+Use:
+- Primary keys.
+- Foreign keys.
+- Unique constraints.
+- Appropriate indexes.
+- Created/updated timestamps.
+- Proper relationships.
+- Cascading behavior where appropriate.
+
+Generate Prisma schema and database migrations.
+
+Do not use localStorage as the primary database.
+
+localStorage may only be used for appropriate client preferences.
+
+---
+
+# 20. BACKEND API
+
+Build a modular REST API.
+
+Suggested routes:
+
+Authentication:
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/logout
+GET /api/auth/me
+POST /api/auth/forgot-password
+POST /api/auth/reset-password
+
+Profile:
+GET /api/profile
+PUT /api/profile
+POST /api/profile/onboarding
+
+Skills:
+GET /api/skills
+POST /api/skills
+PUT /api/skills/:id
+DELETE /api/skills/:id
+
+Career:
+GET /api/careers
+GET /api/careers/:id
+POST /api/careers/compare
+
+Analysis:
+POST /api/analysis
+GET /api/analysis
+GET /api/analysis/:id
+DELETE /api/analysis/:id
+
+Roadmaps:
+POST /api/roadmaps/generate
+GET /api/roadmaps
+GET /api/roadmaps/:id
+PUT /api/roadmaps/:id
+DELETE /api/roadmaps/:id
+
+Tasks:
+POST /api/tasks
+PUT /api/tasks/:id
+DELETE /api/tasks/:id
+PATCH /api/tasks/:id/status
+
+Projects:
+GET /api/projects/recommendations
+POST /api/projects
+PUT /api/projects/:id
+DELETE /api/projects/:id
+
+Resources:
+GET /api/resources
+POST /api/resources/bookmark
+DELETE /api/resources/bookmark/:id
+
+Portfolio:
+GET /api/portfolio
+POST /api/portfolio/projects
+PUT /api/portfolio/projects/:id
+DELETE /api/portfolio/projects/:id
+
+AI Coach:
+POST /api/ai/chat
+POST /api/ai/portfolio-review
+POST /api/ai/project-recommendations
+
+Analytics:
+GET /api/analytics/dashboard
+GET /api/analytics/progress
+
+Admin:
+GET /api/admin/dashboard
+GET /api/admin/users
+PUT /api/admin/users/:id
+GET /api/admin/careers
+POST /api/admin/careers
+
+Use:
+- Typed request/response schemas.
+- Zod validation.
+- Proper HTTP status codes.
+- Error-handling middleware.
+- Authentication middleware.
+- Authorization middleware.
+- Rate limiting.
+- Logging.
+- Pagination.
+- API documentation.
+
+---
+
+# 21. AI ENGINEERING
+
+Implement a secure AI service layer.
+
+Requirements:
+
+- Gemini API integration on backend.
+- Structured output where appropriate.
+- JSON schema validation.
+- Retry handling.
+- Request timeouts.
+- Rate limiting.
+- Prompt versioning.
+- Input validation.
+- Safe error messages.
+- AI response validation.
+- Context-aware prompts.
+- Avoid excessive API calls.
+
+AI must generate explanations and recommendations.
+
+The backend should calculate:
+- Proficiency gap.
+- Weighted skill match.
+- Priority.
+- Estimated completion calculations.
+
+Use deterministic calculations for these metrics.
+
+Use AI for:
+- Personalized explanations.
+- Roadmap creation.
+- Project ideas.
+- Learning recommendations.
+- Career coaching.
+- Portfolio feedback.
+
+Do not allow AI to directly modify the database without validated backend operations.
+
+---
+
+# 22. SECURITY
+
+Implement:
+
+- Secure password hashing.
+- Authentication.
+- Role-based authorization.
+- Input validation.
+- API rate limiting.
+- CORS configuration.
+- Secure cookies where appropriate.
+- Protection against SQL injection through ORM.
+- Protection against XSS.
+- No secrets in frontend code.
+- Environment variable validation.
+- Secure error handling.
+- Request size limits.
+- Ownership checks for every user resource.
+- Admin authorization.
+- Audit logging for admin actions.
+
+Create an .env.example file.
+
+Never commit real API keys.
+
+---
+
+# 23. TESTING
+
+Write tests.
+
+Frontend:
+- Component tests.
+- Form validation tests.
+- UI interaction tests.
+
+Backend:
+- Authentication tests.
+- Profile tests.
+- Skills CRUD tests.
+- Career analysis tests.
+- Roadmap tests.
+- Authorization tests.
+
+Integration:
+- Registration.
+- Login.
+- Onboarding.
+- Skill addition.
+- Career selection.
+- Analysis generation.
+- Roadmap generation.
+- Task completion.
+- Progress dashboard update.
+
+Add health check:
+GET /api/health
+
+---
+
+# 24. DEPLOYMENT
+
+Prepare the project for deployment.
+
+Frontend:
+- Vercel-compatible configuration.
+
+Backend:
+- Deployable to an appropriate Node.js hosting platform.
+
+Database:
+- PostgreSQL hosted database.
+
+Include:
+- Environment variable configuration.
+- Database migration instructions.
+- Build instructions.
+- Deployment instructions.
+- Production security checklist.
+
+Do not pretend the application has been deployed.
+
+---
+
+# 25. CODE STRUCTURE
+
+Use a modular monorepo structure similar to:
+
+skillgraph-ai/
+  apps/
+    web/
+      src/
+        components/
+        pages/
+        layouts/
+        hooks/
+        services/
+        contexts/
+        features/
+        types/
+        utils/
+    api/
+      src/
+        routes/
+        controllers/
+        services/
+        middleware/
+        validators/
+        utils/
+        config/
+        types/
+  packages/
+    shared/
+      types/
+      schemas/
+  prisma/
+    schema.prisma
+    migrations/
+    seed.ts
+  tests/
+  docs/
+  .env.example
+  README.md
+  package.json
+
+Adjust the structure where necessary but keep frontend, backend, database and shared logic organized.
+
+---
+
+# 26. SEED DATA
+
+Create development seed data for:
+
+- Career roles.
+- Required skills.
+- Optional skills.
+- Skill categories.
+- Learning resources.
+- Project templates.
+
+Include a sample career role:
+
+Software Development Engineer.
+
+Example skill requirements:
+
+- Java or C++.
+- Python.
+- Data Structures and Algorithms.
+- Object-Oriented Programming.
+- DBMS.
+- SQL.
+- Operating Systems.
+- Computer Networks.
+- Git.
+- Software Engineering.
+- REST APIs.
+- Problem Solving.
+
+Include weights and importance levels.
+
+Make seed data clearly distinguishable from real user data.
+
+---
+
+# 27. UI PAGES
+
+Implement the following pages:
+
+Public:
+- Landing page.
+- Features.
+- Career paths.
+- Login.
+- Register.
+- Forgot password.
+
+Authenticated:
+- Dashboard.
+- Onboarding.
+- My Profile.
+- Skills.
+- Career Explorer.
+- Skill Gap Analysis.
+- AI Analysis Report.
+- Roadmap.
+- Roadmap Detail.
+- Learning Resources.
+- Projects.
+- Portfolio.
+- AI Career Coach.
+- Progress Analytics.
+- Settings.
+- Notifications.
+
+Admin:
+- Admin Dashboard.
+- User Management.
+- Career Management.
+- Skill Management.
+- Resources Management.
+- Project Templates.
+
+Every page should have a proper navigation path.
+
+Avoid dead buttons.
+
+---
+
+# 28. IMPORTANT IMPLEMENTATION RULES
+
+1. Do not build only a landing page.
+2. Do not build only a dashboard.
+3. Do not create fake AI functionality.
+4. Do not hardcode every dashboard metric.
+5. Do not use static buttons that do nothing.
+6. Do not store all data only in localStorage.
+7. Do not expose API keys.
+8. Do not create unnecessary components with duplicate logic.
+9. Do not write the entire application as one huge React component.
+10. Do not create meaningless AI responses.
+11. Do not invent external resource URLs.
+12. Do not claim features are completed if they are not implemented.
+13. Build proper frontend and backend.
+14. Use real database persistence.
+15. Ensure the application compiles.
+16. Fix build and runtime errors.
+17. Include useful empty states.
+18. Make the product accessible.
+19. Maintain a consistent professional design.
+20. Follow clean architecture and maintainable coding practices.
+
+---
+
+# 29. EXECUTION STRATEGY
+
+Build the project in carefully organized phases.
+
+PHASE 1:
+- Project architecture.
+- Design system.
+- Landing page.
+- Authentication.
+- Database schema.
+- Basic dashboard.
+- Onboarding.
+
+PHASE 2:
+- Skill management.
+- Career role catalog.
+- Skill gap analysis.
+- Scoring engine.
+- Analysis reports.
+
+PHASE 3:
+- AI roadmap generator.
+- Roadmap task management.
+- Project recommendation engine.
+- Learning resources.
+
+PHASE 4:
+- AI career coach.
+- Portfolio.
+- Progress analytics.
+- Career explorer.
+
+PHASE 5:
+- Admin panel.
+- Security hardening.
+- Tests.
+- Documentation.
+- Deployment preparation.
+
+For each phase:
+- Implement the actual features.
+- Review the code.
+- Fix errors.
+- Verify navigation.
+- Verify data persistence.
+- Verify responsive layout.
+- Verify API functionality.
+
+Do not stop after creating a visual prototype.
+
+---
+
+# 30. FINAL DELIVERABLE
+
+Deliver a complete working SkillGraph AI application.
+
+I expect:
+
+- Professional UI.
+- Complete frontend.
+- Backend API.
+- Database schema.
+- Authentication.
+- Onboarding.
+- Skill CRUD.
+- Career catalog.
+- Skill-gap analysis.
+- Transparent scoring.
+- AI-generated reports.
+- Roadmap generation.
+- Task tracking.
+- Project recommendations.
+- Learning resources.
+- Career coach.
+- Portfolio.
+- Progress analytics.
+- Admin panel.
+- Tests.
+- README.
+- .env.example.
+- Setup guide.
+- Deployment guide.
+
+Before finishing, inspect the implementation for:
+
+- Broken imports.
+- Build errors.
+- Runtime errors.
+- Missing pages.
+- Dead buttons.
+- Incorrect navigation.
+- API errors.
+- Database problems.
+- Security problems.
+- Responsive design issues.
+- Empty-state problems.
+
+If you cannot complete everything in one generation, prioritize a fully working end-to-end MVP and continue implementing the remaining phases. Do not replace missing backend functionality with fake frontend data.
+
+Start by creating the project architecture and implementing Phase 1, then continue through the phases while maintaining a working application.

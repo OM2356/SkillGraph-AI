@@ -1,0 +1,6 @@
+{
+  "name": "SkillGraph AI",
+  "description": "AI-Powered Skill Gap Analysis & Career Roadmap Engine for students, graduates, and software engineers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
